@@ -20,7 +20,7 @@ from contextlib import closing
 
 if __name__ == '__main__':
 
-    start_url = 'https://cloud.tsinghua.edu.cn/d/9ee6160f580344749cf6/'
+    start_url = ''
 
     # chromedriver的路径
     chromedriver = '/Users/cxs/libraries/chromedriver'
@@ -38,7 +38,7 @@ if __name__ == '__main__':
     time.sleep(2 + 3*random.random())
 
     input_box = driver.find_element_by_class_name('input')
-    input_box.send_keys('algoshare')
+    input_box.send_keys('')
     driver.find_element_by_xpath("//*[@type='submit']").click()
 
     # html = driver.page_source.encode("utf-8", "ignore")
