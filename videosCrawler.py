@@ -14,13 +14,13 @@ import os
 import time
 
 import random
+from contextlib import closing
 
-import traceback
 
 
 if __name__ == '__main__':
 
-    start_url = ''
+    start_url = 'https://cloud.tsinghua.edu.cn/d/9ee6160f580344749cf6/'
 
     # chromedriver的路径
     chromedriver = '/Users/cxs/libraries/chromedriver'
@@ -38,7 +38,7 @@ if __name__ == '__main__':
     time.sleep(2 + 3*random.random())
 
     input_box = driver.find_element_by_class_name('input')
-    input_box.send_keys('')
+    input_box.send_keys('algoshare')
     driver.find_element_by_xpath("//*[@type='submit']").click()
 
     # html = driver.page_source.encode("utf-8", "ignore")
@@ -67,11 +67,16 @@ if __name__ == '__main__':
                     continue
                 driver.get(video_html)
                 video_url = driver.find_element_by_class_name('vjs-tech').get_attribute('src')
-                print('正在下载视频 %s' % filepath)
-                r = requests.get(video_url)
-                with open(filepath, 'wb') as fp:
-                    fp.write(r.content)
-                print('%s已下载' % filepath)
+                with closing(requests.get(video_url, stream=True)) as response:
+                    chunk_size = 1024  # 单次请求最大值
+                    content_size = int(response.headers['content-length'])  # 内容体总大小
+                    data_count = 0
+                    with open(filepath, "wb") as file:
+                        for data in response.iter_content(chunk_size=chunk_size):
+                            file.write(data)
+                            data_count = data_count + len(data)
+                            now_jd = (data_count / content_size) * 100
+                            print("\r 文件下载进度：%d%%(%d/%d)" % (now_jd, data_count, content_size), end=" ")
             except:
                 continue
             driver.back()
